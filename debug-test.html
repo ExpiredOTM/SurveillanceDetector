@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Fingerprint Tracking</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .results { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Debug Fingerprint Tracking</h1>
+    <p>Open browser console and click buttons to test fingerprint detection</p>
+    
+    <button onclick="testNavigator()">Test Navigator Access</button>
+    <button onclick="testScreen()">Test Screen Access</button>
+    <button onclick="testCanvas()">Test Canvas Fingerprinting</button>
+    <button onclick="testTimezone()">Test Timezone Access</button>
+    <button onclick="testExtensionDirectly()" style="background: #dc3545;">Test Extension Directly</button>
+    
+    <div class="results" id="results"></div>
+
+    <script>
+        function log(message) {
+            console.log(message);
+            const results = document.getElementById('results');
+            results.innerHTML += message + '<br>';
+        }
+
+        function testNavigator() {
+            log('Testing Navigator access...');
+            log('User Agent: ' + navigator.userAgent.substring(0, 50) + '...');
+            log('Platform: ' + navigator.platform);
+            log('Language: ' + navigator.language);
+            log('Hardware Concurrency: ' + navigator.hardwareConcurrency);
+        }
+
+        function testScreen() {
+            log('Testing Screen access...');
+            log('Screen Width: ' + screen.width);
+            log('Screen Height: ' + screen.height);
+            log('Color Depth: ' + screen.colorDepth);
+        }
+
+        function testCanvas() {
+            log('Testing Canvas fingerprinting...');
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 50;
+            const ctx = canvas.getContext('2d');
+            ctx.fillText('Test', 10, 20);
+            const dataURL = canvas.toDataURL();
+            log('Canvas data URL generated: ' + dataURL.substring(0, 50) + '...');
+        }
+
+        function testTimezone() {
+            log('Testing Timezone access...');
+            const date = new Date();
+            const offset = date.getTimezoneOffset();
+            log('Timezone offset: ' + offset);
+        }
+
+        // Test the extension directly
+        function testExtensionDirectly() {
+            log('Testing extension message passing...');
+            
+            // Send a test message to the content script
+            window.postMessage({
+                type: 'surveillance-navigator-fingerprint',
+                data: {
+                    property: 'userAgent',
+                    category: 'browser',
+                    severity: 'HIGH',
+                    timestamp: Date.now()
+                }
+            }, '*');
+            
+            log('Test message sent');
+        }
+
+        // Auto-trigger some tests on load
+        window.addEventListener('load', () => {
+            log('Page loaded - auto-triggering basic fingerprinting...');
+            setTimeout(() => {
+                navigator.userAgent; // Should trigger fingerprint detection
+                screen.width; // Should trigger fingerprint detection
+                
+                // Also test the extension directly
+                setTimeout(() => {
+                    testExtensionDirectly();
+                }, 2000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

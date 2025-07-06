@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fingerprinting Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .results {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .hidden-canvas {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fingerprinting Detection Test Page</h1>
+    <p>This page demonstrates various fingerprinting techniques that the Corporate Surveillance Reverse-Engineering Tool can detect.</p>
+    
+    <div class="test-section">
+        <h2>Canvas Fingerprinting</h2>
+        <p>Tests canvas-based fingerprinting techniques</p>
+        <button class="test-button" onclick="testCanvasFingerprinting()">Test Canvas Fingerprinting</button>
+        <div id="canvas-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>WebGL Fingerprinting</h2>
+        <p>Tests WebGL-based device fingerprinting</p>
+        <button class="test-button" onclick="testWebGLFingerprinting()">Test WebGL Fingerprinting</button>
+        <div id="webgl-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Navigator Properties</h2>
+        <p>Tests browser and system property access</p>
+        <button class="test-button" onclick="testNavigatorFingerprinting()">Test Navigator Properties</button>
+        <div id="navigator-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Screen Properties</h2>
+        <p>Tests display configuration fingerprinting</p>
+        <button class="test-button" onclick="testScreenFingerprinting()">Test Screen Properties</button>
+        <div id="screen-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Audio Context</h2>
+        <p>Tests audio-based fingerprinting</p>
+        <button class="test-button" onclick="testAudioFingerprinting()">Test Audio Fingerprinting</button>
+        <div id="audio-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Font Detection</h2>
+        <p>Tests font-based fingerprinting</p>
+        <button class="test-button" onclick="testFontFingerprinting()">Test Font Detection</button>
+        <div id="font-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Media Devices</h2>
+        <p>Tests media device enumeration</p>
+        <button class="test-button" onclick="testMediaFingerprinting()">Test Media Devices</button>
+        <div id="media-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Performance Timing</h2>
+        <p>Tests high-resolution timing access</p>
+        <button class="test-button" onclick="testPerformanceFingerprinting()">Test Performance Timing</button>
+        <div id="performance-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Timezone Detection</h2>
+        <p>Tests timezone-based fingerprinting</p>
+        <button class="test-button" onclick="testTimezoneFingerprinting()">Test Timezone Detection</button>
+        <div id="timezone-results" class="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Run All Tests</h2>
+        <p>Execute all fingerprinting tests in sequence</p>
+        <button class="test-button" onclick="runAllTests()" style="background: #dc3545;">Run All Fingerprinting Tests</button>
+        <div id="all-results" class="results"></div>
+    </div>
+
+    <script>
+        function testCanvasFingerprinting() {
+            const results = document.getElementById('canvas-results');
+            results.innerHTML = 'Running canvas fingerprinting tests...\n';
+            
+            try {
+                // Create a visible canvas for testing
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 50;
+                document.body.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Draw fingerprinting content
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#f60';
+                ctx.fillRect(125, 1, 62, 20);
+                ctx.fillStyle = '#069';
+                ctx.fillText('BrowserLeaks,com', 2, 15);
+                ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                ctx.fillText('BrowserLeaks,com', 4, 17);
+                
+                // Extract fingerprint data
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const dataURL = canvas.toDataURL();
+                
+                results.innerHTML += `Canvas context created: ${ctx ? 'SUCCESS' : 'FAILED'}\n`;
+                results.innerHTML += `Image data extracted: ${imageData ? 'SUCCESS' : 'FAILED'}\n`;
+                results.innerHTML += `Data URL generated: ${dataURL ? 'SUCCESS' : 'FAILED'}\n`;
+                results.innerHTML += `Canvas hash: ${dataURL.substring(0, 50)}...\n`;
+                
+                // Clean up
+                document.body.removeChild(canvas);
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testWebGLFingerprinting() {
+            const results = document.getElementById('webgl-results');
+            results.innerHTML = 'Running WebGL fingerprinting tests...\n';
+            
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!gl) {
+                    results.innerHTML += 'WebGL not supported\n';
+                    return;
+                }
+                
+                // Test various WebGL parameters
+                const vendor = gl.getParameter(gl.VENDOR);
+                const renderer = gl.getParameter(gl.RENDERER);
+                const version = gl.getParameter(gl.VERSION);
+                const shadingLanguageVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+                
+                // Test extension-specific parameters
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    const unmaskedVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    const unmaskedRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    results.innerHTML += `Unmasked Vendor: ${unmaskedVendor}\n`;
+                    results.innerHTML += `Unmasked Renderer: ${unmaskedRenderer}\n`;
+                }
+                
+                results.innerHTML += `Vendor: ${vendor}\n`;
+                results.innerHTML += `Renderer: ${renderer}\n`;
+                results.innerHTML += `Version: ${version}\n`;
+                results.innerHTML += `Shading Language: ${shadingLanguageVersion}\n`;
+                
+                // Test texture and viewport limits
+                results.innerHTML += `Max Texture Size: ${gl.getParameter(gl.MAX_TEXTURE_SIZE)}\n`;
+                results.innerHTML += `Max Viewport Dims: ${gl.getParameter(gl.MAX_VIEWPORT_DIMS)}\n`;
+                results.innerHTML += `Max Vertex Attribs: ${gl.getParameter(gl.MAX_VERTEX_ATTRIBS)}\n`;
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testNavigatorFingerprinting() {
+            const results = document.getElementById('navigator-results');
+            results.innerHTML = 'Running Navigator fingerprinting tests...\n';
+            
+            try {
+                // Access various navigator properties
+                results.innerHTML += `User Agent: ${navigator.userAgent}\n`;
+                results.innerHTML += `Platform: ${navigator.platform}\n`;
+                results.innerHTML += `Language: ${navigator.language}\n`;
+                results.innerHTML += `Languages: ${navigator.languages.join(', ')}\n`;
+                results.innerHTML += `Hardware Concurrency: ${navigator.hardwareConcurrency}\n`;
+                results.innerHTML += `Device Memory: ${navigator.deviceMemory || 'Not available'}\n`;
+                results.innerHTML += `Max Touch Points: ${navigator.maxTouchPoints}\n`;
+                results.innerHTML += `Cookie Enabled: ${navigator.cookieEnabled}\n`;
+                results.innerHTML += `Online: ${navigator.onLine}\n`;
+                results.innerHTML += `Do Not Track: ${navigator.doNotTrack}\n`;
+                results.innerHTML += `Product Sub: ${navigator.productSub}\n`;
+                results.innerHTML += `Vendor: ${navigator.vendor}\n`;
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testScreenFingerprinting() {
+            const results = document.getElementById('screen-results');
+            results.innerHTML = 'Running Screen fingerprinting tests...\n';
+            
+            try {
+                results.innerHTML += `Screen Width: ${screen.width}\n`;
+                results.innerHTML += `Screen Height: ${screen.height}\n`;
+                results.innerHTML += `Available Width: ${screen.availWidth}\n`;
+                results.innerHTML += `Available Height: ${screen.availHeight}\n`;
+                results.innerHTML += `Color Depth: ${screen.colorDepth}\n`;
+                results.innerHTML += `Pixel Depth: ${screen.pixelDepth}\n`;
+                results.innerHTML += `Orientation: ${screen.orientation ? screen.orientation.type : 'Not available'}\n`;
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testAudioFingerprinting() {
+            const results = document.getElementById('audio-results');
+            results.innerHTML = 'Running Audio fingerprinting tests...\n';
+            
+            try {
+                if (window.AudioContext || window.webkitAudioContext) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const audioContext = new AudioContext();
+                    
+                    results.innerHTML += `Audio Context created: SUCCESS\n`;
+                    results.innerHTML += `Sample Rate: ${audioContext.sampleRate}\n`;
+                    results.innerHTML += `State: ${audioContext.state}\n`;
+                    results.innerHTML += `Base Latency: ${audioContext.baseLatency || 'Not available'}\n`;
+                    
+                    // Create oscillator for audio fingerprinting
+                    const oscillator = audioContext.createOscillator();
+                    const analyser = audioContext.createAnalyser();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(analyser);
+                    analyser.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 10000;
+                    gainNode.gain.value = 0;
+                    
+                    results.innerHTML += `Oscillator created: SUCCESS\n`;
+                    
+                    audioContext.close();
+                } else {
+                    results.innerHTML += 'Audio Context not supported\n';
+                }
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testFontFingerprinting() {
+            const results = document.getElementById('font-results');
+            results.innerHTML = 'Running Font fingerprinting tests...\n';
+            
+            try {
+                if (document.fonts && document.fonts.check) {
+                    const testFonts = [
+                        '12px Arial',
+                        '12px Helvetica',
+                        '12px Times',
+                        '12px Georgia',
+                        '12px Verdana',
+                        '12px Courier',
+                        '12px Comic Sans MS'
+                    ];
+                    
+                    testFonts.forEach(font => {
+                        const available = document.fonts.check(font);
+                        results.innerHTML += `${font}: ${available ? 'Available' : 'Not available'}\n`;
+                    });
+                } else {
+                    results.innerHTML += 'Font API not supported\n';
+                }
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testMediaFingerprinting() {
+            const results = document.getElementById('media-results');
+            results.innerHTML = 'Running Media fingerprinting tests...\n';
+            
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                    navigator.mediaDevices.enumerateDevices()
+                        .then(devices => {
+                            results.innerHTML += `Total devices: ${devices.length}\n`;
+                            devices.forEach((device, index) => {
+                                results.innerHTML += `Device ${index}: ${device.kind} - ${device.label || 'Unknown'}\n`;
+                            });
+                        })
+                        .catch(error => {
+                            results.innerHTML += `Error: ${error.message}\n`;
+                        });
+                } else {
+                    results.innerHTML += 'Media Devices API not supported\n';
+                }
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testPerformanceFingerprinting() {
+            const results = document.getElementById('performance-results');
+            results.innerHTML = 'Running Performance fingerprinting tests...\n';
+            
+            try {
+                // Test high-resolution timing
+                const start = performance.now();
+                
+                // Simulate some work
+                for (let i = 0; i < 1000; i++) {
+                    Math.random();
+                }
+                
+                const end = performance.now();
+                const duration = end - start;
+                
+                results.innerHTML += `Performance.now() available: SUCCESS\n`;
+                results.innerHTML += `High-resolution timing: ${duration.toFixed(6)}ms\n`;
+                results.innerHTML += `Navigation timing: ${performance.navigation ? 'Available' : 'Not available'}\n`;
+                results.innerHTML += `Resource timing: ${performance.getEntriesByType ? 'Available' : 'Not available'}\n`;
+                
+                // Multiple calls to generate fingerprinting pattern
+                for (let i = 0; i < 10; i++) {
+                    performance.now();
+                }
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function testTimezoneFingerprinting() {
+            const results = document.getElementById('timezone-results');
+            results.innerHTML = 'Running Timezone fingerprinting tests...\n';
+            
+            try {
+                const date = new Date();
+                const timezone = date.getTimezoneOffset();
+                const timezoneString = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                
+                results.innerHTML += `Timezone Offset: ${timezone} minutes\n`;
+                results.innerHTML += `Timezone String: ${timezoneString}\n`;
+                results.innerHTML += `Locale: ${navigator.language}\n`;
+                results.innerHTML += `Date String: ${date.toString()}\n`;
+                
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`;
+            }
+        }
+
+        function runAllTests() {
+            const results = document.getElementById('all-results');
+            results.innerHTML = 'Running all fingerprinting tests in sequence...\n\n';
+            
+            setTimeout(() => testCanvasFingerprinting(), 100);
+            setTimeout(() => testWebGLFingerprinting(), 200);
+            setTimeout(() => testNavigatorFingerprinting(), 300);
+            setTimeout(() => testScreenFingerprinting(), 400);
+            setTimeout(() => testAudioFingerprinting(), 500);
+            setTimeout(() => testFontFingerprinting(), 600);
+            setTimeout(() => testMediaFingerprinting(), 700);
+            setTimeout(() => testPerformanceFingerprinting(), 800);
+            setTimeout(() => testTimezoneFingerprinting(), 900);
+            
+            setTimeout(() => {
+                results.innerHTML += 'All fingerprinting tests completed!\n';
+                results.innerHTML += 'Check the extension popup for detailed forensic analysis.\n';
+            }, 1000);
+        }
+
+        // Auto-run some tests when page loads
+        window.addEventListener('load', () => {
+            console.log('Fingerprinting test page loaded');
+            // Automatically trigger some basic fingerprinting
+            setTimeout(() => {
+                navigator.userAgent; // Access user agent
+                screen.width; // Access screen properties
+                new Date().getTimezoneOffset(); // Access timezone
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

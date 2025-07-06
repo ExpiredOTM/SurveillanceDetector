@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 400px;
+      min-height: 500px;
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    .header {
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #ff6b6b;
+    }
+    
+    .header p {
+      margin: 5px 0 0 0;
+      color: #888;
+      font-size: 12px;
+    }
+    
+    .privacy-score {
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .privacy-score h2 {
+      margin: 0 0 5px 0;
+      font-size: 24px;
+      color: #000;
+    }
+    
+    .privacy-score p {
+      margin: 0;
+      color: #333;
+      font-size: 12px;
+    }
+    
+    .section {
+      margin-bottom: 20px;
+    }
+    
+    .section h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-icon {
+      width: 16px;
+      height: 16px;
+      background: #666;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    
+    .risk-high { background: #ff4757; }
+    .risk-medium { background: #ffa502; }
+    .risk-low { background: #26de81; }
+    
+    .tracker-list {
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background: #0f0f0f;
+    }
+    
+    .tracker-item {
+      padding: 8px 12px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .tracker-item:last-child {
+      border-bottom: none;
+    }
+    
+    .tracker-domain {
+      font-size: 12px;
+      color: #fff;
+      font-weight: 500;
+    }
+    
+    .tracker-score {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #fff;
+      font-weight: bold;
+    }
+    
+    .methods-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 10px;
+    }
+    
+    .method-tag {
+      background: #333;
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: #2a2a2a;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff6b6b;
+    }
+    
+    .stat-label {
+      font-size: 10px;
+      color: #888;
+      margin-top: 2px;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .btn-primary {
+      background: #ff6b6b;
+      color: #fff;
+    }
+    
+    .btn-primary:hover {
+      background: #ff5252;
+    }
+    
+    .btn-secondary {
+      background: #333;
+      color: #fff;
+    }
+    
+    .btn-secondary:hover {
+      background: #444;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+    
+    .empty-state h3 {
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+    
+    .fingerprint-warning {
+      background: #ff4757;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .price-alert {
+      background: #ffa502;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      border-bottom: 1px solid #333;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      font-size: 12px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #ff6b6b;
+      border-bottom-color: #ff6b6b;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      background: #333;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .timeline-container {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background: #0f0f0f;
+    }
+
+    .timeline-entry {
+      padding: 10px 12px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .timeline-entry:last-child {
+      border-bottom: none;
+    }
+
+    .timeline-entry.new-attribute {
+      background: #ff6b6b20;
+      border-left: 3px solid #ff6b6b;
+    }
+
+    .timeline-time {
+      font-size: 10px;
+      color: #666;
+      min-width: 60px;
+    }
+
+    .timeline-domain {
+      font-size: 11px;
+      color: #ff6b6b;
+      font-weight: 500;
+      min-width: 80px;
+    }
+
+    .timeline-attribute {
+      font-size: 11px;
+      color: #fff;
+      flex: 1;
+    }
+
+    .timeline-severity {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+      min-width: 35px;
+      text-align: center;
+    }
+
+    .severity-high {
+      background: #ff4757;
+      color: #fff;
+    }
+
+    .severity-medium {
+      background: #ffa502;
+      color: #fff;
+    }
+
+    .severity-low {
+      background: #26de81;
+      color: #000;
+    }
+
+    .timeline-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 8px;
+      background: #ff6b6b;
+      color: #fff;
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    .forensic-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .forensic-stat {
+      background: #2a2a2a;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .forensic-stat-number {
+      font-size: 14px;
+      font-weight: bold;
+      color: #ff6b6b;
+    }
+
+    .forensic-stat-label {
+      font-size: 9px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .attribute-progress {
+      margin-bottom: 15px;
+    }
+
+    .attribute-progress-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 8px;
+      background: #2a2a2a;
+      border-radius: 3px;
+      margin-bottom: 5px;
+    }
+
+    .attribute-progress-domain {
+      font-size: 11px;
+      color: #fff;
+    }
+
+    .attribute-progress-count {
+      font-size: 10px;
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+
+    .realtime-indicator {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #ff6b6b;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .realtime-indicator.show {
+      opacity: 1;
+    }
+
+    .realtime-indicator.pulse {
+      animation: pulse 0.5s;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Surveillance Detector</h1>
+    <p>Corporate data collection analysis</p>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="timeline">Timeline</button>
+    <button class="tab-btn" data-tab="forensic">Forensic</button>
+    <button class="tab-btn" data-tab="exfiltration">Exfiltration</button>
+  </div>
+
+  <div id="loading" class="loading">
+    <div>Analyzing surveillance...</div>
+  </div>
+
+  <div id="content" style="display: none;">
+    <!-- Overview Tab -->
+    <div class="tab-content active" id="overview-tab">
+      <div class="privacy-score">
+        <h2 id="privacy-score">--</h2>
+        <p>Privacy Score (0-100)</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-number" id="tracker-count">0</div>
+          <div class="stat-label">Trackers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="fingerprint-count">0</div>
+          <div class="stat-label">Fingerprints</div>
+        </div>
+      </div>
+
+      <div id="fingerprint-warning" class="fingerprint-warning" style="display: none;">
+        <strong>Fingerprinting Detected!</strong> This site is collecting your device characteristics.
+      </div>
+
+      <div id="price-alert" class="price-alert" style="display: none;">
+        <strong>Price Tracking Detected!</strong> This site may be personalizing prices based on your data.
+      </div>
+
+      <div class="section">
+        <h3>
+          <span class="section-icon risk-high">!</span>
+          High Risk Trackers
+        </h3>
+        <div id="high-risk-trackers" class="tracker-list"></div>
+      </div>
+
+      <div class="section">
+        <h3>
+          <span class="section-icon risk-medium">?</span>
+          Tracking Methods
+        </h3>
+        <div id="tracking-methods" class="methods-list"></div>
+      </div>
+    </div>
+
+    <!-- Timeline Tab -->
+    <div class="tab-content" id="timeline-tab">
+      <div class="section">
+        <h3>Real-Time Fingerprinting Timeline</h3>
+        <div class="timeline-container" id="timeline-container">
+          <div class="empty-state">No fingerprinting activity detected yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forensic Tab -->
+    <div class="tab-content" id="forensic-tab">
+      <div class="forensic-stats" id="forensic-stats">
+        <div class="forensic-stat">
+          <div class="forensic-stat-number" id="total-domains">0</div>
+          <div class="forensic-stat-label">Domains</div>
+        </div>
+        <div class="forensic-stat">
+          <div class="forensic-stat-number" id="total-attributes">0</div>
+          <div class="forensic-stat-label">Attributes</div>
+        </div>
+        <div class="forensic-stat">
+          <div class="forensic-stat-number" id="new-attributes">0</div>
+          <div class="forensic-stat-label">New Today</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Attribute Progression</h3>
+        <div class="attribute-progress" id="attribute-progress">
+          <div class="empty-state">No attribute data available</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Most Active Fingerprinters</h3>
+        <div class="tracker-list" id="active-fingerprinters">
+          <div class="empty-state">No active fingerprinters detected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exfiltration Tab -->
+    <div class="tab-content" id="exfiltration-tab">
+      <div class="forensic-stats" id="exfiltration-stats">
+        <div class="forensic-stat">
+          <div class="forensic-stat-number" id="total-exfiltration-domains">0</div>
+          <div class="forensic-stat-label">Domains</div>
+        </div>
+        <div class="forensic-stat">
+          <div class="forensic-stat-number" id="total-exfiltration-attempts">0</div>
+          <div class="forensic-stat-label">Attempts</div>
+        </div>
+        <div class="forensic-stat">
+          <div class="forensic-stat-number" id="critical-alerts">0</div>
+          <div class="forensic-stat-label">Critical</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>
+          <span class="section-icon risk-high">!</span>
+          Data Exfiltration Detected
+        </h3>
+        <div class="tracker-list" id="exfiltration-list">
+          <div class="empty-state">No data exfiltration detected</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>
+          <span class="section-icon risk-medium">⚡</span>
+          Beaconing Patterns
+        </h3>
+        <div class="tracker-list" id="beaconing-list">
+          <div class="empty-state">No beaconing patterns detected</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>
+          <span class="section-icon risk-high">🔔</span>
+          Security Alerts
+        </h3>
+        <div class="timeline-container" id="security-alerts">
+          <div class="empty-state">No security alerts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-primary" id="refresh-btn">Refresh</button>
+      <button class="btn btn-secondary" id="export-btn">Export Data</button>
+      <button class="btn btn-secondary" id="clear-btn">Clear Data</button>
+    </div>
+  </div>
+
+  <div class="realtime-indicator" id="realtime-indicator">
+    NEW FINGERPRINT DETECTED
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 

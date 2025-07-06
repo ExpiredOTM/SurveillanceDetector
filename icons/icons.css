@@ -1,0 +1,36 @@
+/* CSS-based icons for the Chrome extension */
+.extension-icon {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  border-radius: 50%;
+  position: relative;
+  display: inline-block;
+}
+
+.extension-icon::before {
+  content: '👁';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+}
+
+.extension-icon-48 {
+  width: 48px;
+  height: 48px;
+}
+
+.extension-icon-48::before {
+  font-size: 24px;
+}
+
+.extension-icon-128 {
+  width: 128px;
+  height: 128px;
+}
+
+.extension-icon-128::before {
+  font-size: 64px;
+} 

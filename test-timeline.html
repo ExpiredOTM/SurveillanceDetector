@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timeline Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background: #333;
+            border-left: 4px solid #26de81;
+        }
+        
+        button {
+            background: #26de81;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #20b56c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fingerprinting Timeline Test</h1>
+    
+    <div class="test-section">
+        <h2>Manual Fingerprinting Tests</h2>
+        <p>Click buttons to trigger fingerprinting attempts. These should appear in the Timeline tab.</p>
+        
+        <button onclick="testCanvas()">Test Canvas Fingerprinting</button>
+        <button onclick="testWebGL()">Test WebGL Fingerprinting</button>
+        <button onclick="testNavigator()">Test Navigator Fingerprinting</button>
+        <button onclick="testScreen()">Test Screen Fingerprinting</button>
+        <button onclick="testAudio()">Test Audio Fingerprinting</button>
+        <button onclick="testPerformance()">Test Performance Fingerprinting</button>
+        <button onclick="testAllFingerprints()">Test All Fingerprints</button>
+        
+        <div id="results"></div>
+    </div>
+    
+    <script>
+        function logResult(message) {
+            const results = document.getElementById('results');
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            result.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            results.appendChild(result);
+            console.log(message);
+        }
+        
+        function testCanvas() {
+            logResult('Testing Canvas fingerprinting...');
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 50;
+            const ctx = canvas.getContext('2d');
+            
+            // Generate fingerprint
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Canvas fingerprint test', 2, 2);
+            
+            // Get image data
+            const imageData = canvas.toDataURL();
+            logResult('Canvas fingerprint generated: ' + imageData.substring(0, 50) + '...');
+        }
+        
+        function testWebGL() {
+            logResult('Testing WebGL fingerprinting...');
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            
+            if (gl) {
+                const vendor = gl.getParameter(gl.VENDOR);
+                const renderer = gl.getParameter(gl.RENDERER);
+                logResult('WebGL vendor: ' + vendor);
+                logResult('WebGL renderer: ' + renderer);
+            } else {
+                logResult('WebGL not supported');
+            }
+        }
+        
+        function testNavigator() {
+            logResult('Testing Navigator fingerprinting...');
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack
+            };
+            
+            Object.entries(info).forEach(([key, value]) => {
+                logResult(`Navigator ${key}: ${value}`);
+            });
+        }
+        
+        function testScreen() {
+            logResult('Testing Screen fingerprinting...');
+            const info = {
+                width: screen.width,
+                height: screen.height,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth
+            };
+            
+            Object.entries(info).forEach(([key, value]) => {
+                logResult(`Screen ${key}: ${value}`);
+            });
+        }
+        
+        function testAudio() {
+            logResult('Testing Audio fingerprinting...');
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const analyser = audioContext.createAnalyser();
+                
+                oscillator.connect(analyser);
+                oscillator.frequency.value = 1000;
+                
+                logResult('Audio context created successfully');
+            } catch (e) {
+                logResult('Audio context creation failed: ' + e.message);
+            }
+        }
+        
+        function testPerformance() {
+            logResult('Testing Performance fingerprinting...');
+            const timing = performance.timing;
+            const memory = performance.memory;
+            
+            if (timing) {
+                logResult('Performance timing available');
+            }
+            
+            if (memory) {
+                logResult('Memory info: ' + JSON.stringify(memory));
+            }
+        }
+        
+        function testAllFingerprints() {
+            logResult('Running all fingerprinting tests...');
+            
+            setTimeout(() => testCanvas(), 100);
+            setTimeout(() => testWebGL(), 200);
+            setTimeout(() => testNavigator(), 300);
+            setTimeout(() => testScreen(), 400);
+            setTimeout(() => testAudio(), 500);
+            setTimeout(() => testPerformance(), 600);
+            
+            logResult('All tests queued with delays');
+        }
+        
+        // Auto-run some tests on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                logResult('Auto-starting fingerprinting tests...');
+                testAllFingerprints();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

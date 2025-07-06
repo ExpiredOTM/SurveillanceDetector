@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Extension Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        
+        button {
+            background: #26de81;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #20b56c;
+        }
+        
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+            border-left: 4px solid #26de81;
+        }
+    </style>
+</head>
+<body>
+    <h1>Extension Test & Debug</h1>
+    
+    <div class="test-section">
+        <h2>Extension Status</h2>
+        <p>Testing if the surveillance extension is properly loaded and working.</p>
+        
+        <button onclick="testExtension()">Test Extension</button>
+        <button onclick="testFingerprinting()">Test Fingerprinting</button>
+        <button onclick="checkConsole()">Check Console</button>
+        
+        <div id="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Canvas Fingerprinting Test</h2>
+        <p>This will trigger canvas fingerprinting detection.</p>
+        <canvas id="test-canvas" width="300" height="100" style="border: 1px solid #26de81;"></canvas>
+        <br>
+        <button onclick="drawCanvas()">Draw Canvas</button>
+        <button onclick="getCanvasData()">Get Canvas Data (Fingerprint)</button>
+        
+        <div id="canvas-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Navigator Fingerprinting Test</h2>
+        <p>This will trigger navigator property access.</p>
+        <button onclick="accessNavigator()">Access Navigator Properties</button>
+        
+        <div id="navigator-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Timeline Test</h2>
+        <p>Manual timeline and fingerprinting tests.</p>
+        <button onclick="runTimelineTest()">Run Timeline Test</button>
+        
+        <div id="timeline-results"></div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function addResult(containerId, message) {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = 'result';
+            result.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            container.appendChild(result);
+        }
+        
+        function testExtension() {
+            log('Testing extension...');
+            addResult('status', 'Extension test started');
+            
+            // Test if content script is loaded
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                addResult('status', 'Chrome extension API available');
+            } else {
+                addResult('status', 'Chrome extension API not available');
+            }
+            
+            // Test if injected script is working
+            const testCanvas = document.createElement('canvas');
+            testCanvas.width = 100;
+            testCanvas.height = 50;
+            const ctx = testCanvas.getContext('2d');
+            
+            log('Created test canvas');
+            addResult('status', 'Test canvas created');
+            
+            // This should trigger surveillance detection
+            ctx.fillText('Test', 10, 10);
+            const data = testCanvas.toDataURL();
+            
+            log('Canvas data extracted: ' + data.substring(0, 30) + '...');
+            addResult('status', 'Canvas fingerprinting test completed');
+        }
+        
+        function testFingerprinting() {
+            log('Testing fingerprinting detection...');
+            addResult('status', 'Fingerprinting test started');
+            
+            // Test multiple fingerprinting methods
+            setTimeout(() => {
+                log('Testing navigator properties...');
+                const userAgent = navigator.userAgent;
+                const platform = navigator.platform;
+                addResult('status', `Navigator data: ${userAgent.substring(0, 50)}...`);
+            }, 100);
+            
+            setTimeout(() => {
+                log('Testing screen properties...');
+                const screenInfo = `${screen.width}x${screen.height}`;
+                addResult('status', `Screen info: ${screenInfo}`);
+            }, 200);
+            
+            setTimeout(() => {
+                log('Testing WebGL...');
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl');
+                if (gl) {
+                    const vendor = gl.getParameter(gl.VENDOR);
+                    addResult('status', `WebGL vendor: ${vendor}`);
+                }
+            }, 300);
+        }
+        
+        function checkConsole() {
+            log('Check the browser console for surveillance detection messages');
+            addResult('status', 'Console check - look for surveillance messages');
+        }
+        
+        function drawCanvas() {
+            const canvas = document.getElementById('test-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#26de81';
+            ctx.fillRect(10, 10, 100, 30);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px Arial';
+            ctx.fillText('Fingerprint Test', 20, 30);
+            
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(150, 10, 100, 30);
+            
+            addResult('canvas-results', 'Canvas drawn - surveillance should detect this');
+        }
+        
+        function getCanvasData() {
+            const canvas = document.getElementById('test-canvas');
+            const data = canvas.toDataURL();
+            
+            log('Canvas fingerprint extracted: ' + data.substring(0, 50) + '...');
+            addResult('canvas-results', 'Canvas data extracted - this should trigger fingerprinting detection');
+        }
+        
+        function accessNavigator() {
+            log('Accessing navigator properties...');
+            
+            const props = [
+                'userAgent',
+                'platform',
+                'language',
+                'languages',
+                'cookieEnabled',
+                'doNotTrack',
+                'hardwareConcurrency',
+                'maxTouchPoints'
+            ];
+            
+            props.forEach(prop => {
+                if (prop in navigator) {
+                    const value = navigator[prop];
+                    log(`Navigator.${prop}: ${value}`);
+                    addResult('navigator-results', `${prop}: ${value}`);
+                }
+            });
+        }
+        
+        function runTimelineTest() {
+            log('Running timeline test...');
+            addResult('timeline-results', 'Timeline test started');
+            
+            // Simulate multiple fingerprinting attempts with delays
+            let step = 0;
+            const steps = [
+                () => {
+                    log('Step 1: Canvas fingerprinting');
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillText('Test 1', 10, 10);
+                    canvas.toDataURL();
+                    addResult('timeline-results', 'Canvas fingerprint #1');
+                },
+                () => {
+                    log('Step 2: Navigator access');
+                    const ua = navigator.userAgent;
+                    const platform = navigator.platform;
+                    addResult('timeline-results', 'Navigator access #1');
+                },
+                () => {
+                    log('Step 3: Screen properties');
+                    const w = screen.width;
+                    const h = screen.height;
+                    addResult('timeline-results', 'Screen properties access');
+                },
+                () => {
+                    log('Step 4: WebGL context');
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl');
+                    if (gl) {
+                        const vendor = gl.getParameter(gl.VENDOR);
+                    }
+                    addResult('timeline-results', 'WebGL context access');
+                },
+                () => {
+                    log('Step 5: Audio context');
+                    try {
+                        const audioContext = new AudioContext();
+                        addResult('timeline-results', 'Audio context created');
+                    } catch (e) {
+                        addResult('timeline-results', 'Audio context failed');
+                    }
+                }
+            ];
+            
+            // Run steps with delays
+            steps.forEach((step, index) => {
+                setTimeout(step, index * 1000);
+            });
+            
+            addResult('timeline-results', 'Timeline test completed - check extension popup');
+        }
+        
+        // Auto-run basic test on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                log('Auto-running basic extension test...');
+                testExtension();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

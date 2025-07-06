@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Surveillance Detector - Options</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      margin: 0;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      border-bottom: 1px solid #333;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #ff6b6b;
+    }
+    
+    .header p {
+      margin: 10px 0 0 0;
+      color: #888;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .section h2 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      color: #fff;
+    }
+    
+    .setting-group {
+      margin-bottom: 20px;
+    }
+    
+    .setting-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .setting-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #fff;
+    }
+    
+    .setting-description {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    
+    .setting-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    .setting-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .setting-checkbox input {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .tracker-list {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .tracker-item {
+      padding: 5px 0;
+      border-bottom: 1px solid #333;
+    }
+    
+    .tracker-item:last-child {
+      border-bottom: none;
+    }
+    
+    .add-tracker {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .add-tracker input {
+      flex: 1;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    
+    .btn-primary {
+      background: #ff6b6b;
+      color: #fff;
+    }
+    
+    .btn-primary:hover {
+      background: #ff5252;
+    }
+    
+    .btn-secondary {
+      background: #666;
+      color: #fff;
+    }
+    
+    .btn-secondary:hover {
+      background: #777;
+    }
+    
+    .btn-danger {
+      background: #ff4757;
+      color: #fff;
+    }
+    
+    .btn-danger:hover {
+      background: #ff3742;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+    
+    .export-section {
+      margin-top: 20px;
+    }
+    
+    .export-data {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 15px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #fff;
+      min-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1000;
+    }
+    
+    .notification.show {
+      opacity: 1;
+    }
+    
+    .notification.success {
+      background: #26de81;
+    }
+    
+    .notification.error {
+      background: #ff4757;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Corporate Surveillance Reverse-Engineering Tool</h1>
+      <p>Configure tracking detection and analysis settings</p>
+    </div>
+
+    <div class="section">
+      <h2>Detection Settings</h2>
+      
+      <div class="setting-group">
+        <div class="setting-checkbox">
+          <input type="checkbox" id="enable-tracking-detection" checked>
+          <label for="enable-tracking-detection" class="setting-label">Enable Tracking Detection</label>
+        </div>
+        <div class="setting-description">
+          Detect and analyze tracking scripts, pixels, and cookies
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-checkbox">
+          <input type="checkbox" id="enable-fingerprinting-detection" checked>
+          <label for="enable-fingerprinting-detection" class="setting-label">Enable Fingerprinting Detection</label>
+        </div>
+        <div class="setting-description">
+          Detect canvas, WebGL, and other fingerprinting attempts
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-checkbox">
+          <input type="checkbox" id="enable-price-tracking" checked>
+          <label for="enable-price-tracking" class="setting-label">Enable Price Tracking Analysis</label>
+        </div>
+        <div class="setting-description">
+          Monitor for personalized pricing based on browsing behavior
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-checkbox">
+          <input type="checkbox" id="enable-network-analysis" checked>
+          <label for="enable-network-analysis" class="setting-label">Enable Network Request Analysis</label>
+        </div>
+        <div class="setting-description">
+          Analyze all network requests for tracking patterns
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Custom Tracker Database</h2>
+      
+      <div class="setting-group">
+        <label class="setting-label">Known Tracking Domains</label>
+        <div class="setting-description">
+          Add custom domains to monitor for tracking activity
+        </div>
+        <div class="tracker-list" id="custom-trackers">
+          <!-- Custom trackers will be populated here -->
+        </div>
+        <div class="add-tracker">
+          <input type="text" id="new-tracker-domain" placeholder="Enter domain (e.g., tracker.com)" class="setting-input">
+          <button class="btn btn-primary" id="add-tracker-btn">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Privacy Settings</h2>
+      
+      <div class="setting-group">
+        <label for="risk-threshold" class="setting-label">Risk Score Threshold</label>
+        <div class="setting-description">
+          Set the minimum risk score for high-risk tracker alerts (0-100)
+        </div>
+        <input type="range" id="risk-threshold" min="0" max="100" value="50" class="setting-input">
+        <div>Current: <span id="risk-threshold-value">50</span></div>
+      </div>
+
+      <div class="setting-group">
+        <label for="data-retention" class="setting-label">Data Retention Period (days)</label>
+        <div class="setting-description">
+          How long to keep surveillance data before automatic cleanup
+        </div>
+        <input type="number" id="data-retention" min="1" max="365" value="30" class="setting-input">
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Data Export</h2>
+      
+      <div class="setting-group">
+        <label class="setting-label">Export Surveillance Data</label>
+        <div class="setting-description">
+          Export collected surveillance data in JSON format
+        </div>
+        <div class="export-section">
+          <button class="btn btn-secondary" id="export-data-btn">Generate Export</button>
+          <div class="export-data" id="export-data" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="save-settings-btn">Save Settings</button>
+      <button class="btn btn-secondary" id="reset-settings-btn">Reset to Defaults</button>
+      <button class="btn btn-danger" id="clear-all-data-btn">Clear All Data</button>
+    </div>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script src="options.js"></script>
+</body>
+</html> 
