@@ -7,6 +7,7 @@ class FingerprintDeltaTracker {
     this.attributeDatabase = new Map(); // domain -> set of accessed attributes
     this.sessionStartTime = Date.now();
     this.realtimeCallbacks = new Set();
+    this.maxTimelineEntries = 500;
   }
 
   recordFingerprintAccess(domain, attribute, details) {
@@ -42,7 +43,11 @@ class FingerprintDeltaTracker {
     };
     
     // Add to timeline
-    this.fingerprintTimeline.get(timelineKey).push(entry);
+    const timeline = this.fingerprintTimeline.get(timelineKey);
+    timeline.push(entry);
+    if (timeline.length > this.maxTimelineEntries) {
+      timeline.splice(0, timeline.length - this.maxTimelineEntries);
+    }
     
     // Trigger real-time callbacks for immediate UI updates
     this.triggerRealtimeCallbacks(entry);
@@ -194,6 +199,8 @@ class SurveillanceAnalyzer {
       realTimeAlerts: true,
       logLevel: 'info'
     };
+
+    this.maxFingerprintAttempts = 200;
     
     // Initialize forensic fingerprint tracking
     this.fingerprintDeltaTracker = new FingerprintDeltaTracker();
@@ -312,6 +319,9 @@ class SurveillanceAnalyzer {
       method: details.method,
       type: details.type
     });
+
+    // Prevent unbounded growth of stored requests
+    this.cleanupNetworkRequests();
   }
 
   analyzeResponse(details) {
@@ -345,6 +355,14 @@ class SurveillanceAnalyzer {
         tabId: details.tabId,
         fingerprinting
       });
+    }
+  }
+
+  cleanupNetworkRequests(limit = 1000) {
+    if (this.networkRequests.size > limit) {
+      const excess = this.networkRequests.size - limit;
+      const keys = Array.from(this.networkRequests.keys()).slice(0, excess);
+      keys.forEach(key => this.networkRequests.delete(key));
     }
   }
 
@@ -517,6 +535,9 @@ class SurveillanceAnalyzer {
     
     const fingerprint = this.fingerprints.get(domain);
     fingerprint.attempts.push(attempt);
+    if (fingerprint.attempts.length > this.maxFingerprintAttempts) {
+      fingerprint.attempts.splice(0, fingerprint.attempts.length - this.maxFingerprintAttempts);
+    }
     
     // Safety check for fingerprinting methods
     if (attempt.fingerprinting && attempt.fingerprinting.methods && Array.isArray(attempt.fingerprinting.methods)) {
