@@ -312,6 +312,9 @@ class SurveillanceAnalyzer {
       method: details.method,
       type: details.type
     });
+
+    // Prevent unbounded growth of stored requests
+    this.cleanupNetworkRequests();
   }
 
   analyzeResponse(details) {
@@ -345,6 +348,14 @@ class SurveillanceAnalyzer {
         tabId: details.tabId,
         fingerprinting
       });
+    }
+  }
+
+  cleanupNetworkRequests(limit = 1000) {
+    if (this.networkRequests.size > limit) {
+      const excess = this.networkRequests.size - limit;
+      const keys = Array.from(this.networkRequests.keys()).slice(0, excess);
+      keys.forEach(key => this.networkRequests.delete(key));
     }
   }
 
