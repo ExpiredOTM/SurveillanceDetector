@@ -1,4 +1,6 @@
 // Corporate Surveillance Reverse-Engineering Tool - Background Script
+const fs = require('fs');
+const path = require('path');
 
 // Fingerprint Delta Tracker - Forensic Timeline Analysis
 class FingerprintDeltaTracker {
@@ -7,6 +9,7 @@ class FingerprintDeltaTracker {
     this.attributeDatabase = new Map(); // domain -> set of accessed attributes
     this.sessionStartTime = Date.now();
     this.realtimeCallbacks = new Set();
+    this.maxTimelineEntries = 500;
   }
 
   recordFingerprintAccess(domain, attribute, details) {
@@ -42,7 +45,11 @@ class FingerprintDeltaTracker {
     };
     
     // Add to timeline
-    this.fingerprintTimeline.get(timelineKey).push(entry);
+    const timeline = this.fingerprintTimeline.get(timelineKey);
+    timeline.push(entry);
+    if (timeline.length > this.maxTimelineEntries) {
+      timeline.splice(0, timeline.length - this.maxTimelineEntries);
+    }
     
     // Trigger real-time callbacks for immediate UI updates
     this.triggerRealtimeCallbacks(entry);
@@ -194,6 +201,10 @@ class SurveillanceAnalyzer {
       realTimeAlerts: true,
       logLevel: 'info'
     };
+
+    this.maxFingerprintAttempts = 200;
+    this.maxLocalOffenders = 50;
+    this.exportDirectory = '/Users/haleyhiltz/Desktop/SurveillanceDetector/DATA';
     
     // Initialize forensic fingerprint tracking
     this.fingerprintDeltaTracker = new FingerprintDeltaTracker();
@@ -528,6 +539,9 @@ class SurveillanceAnalyzer {
     
     const fingerprint = this.fingerprints.get(domain);
     fingerprint.attempts.push(attempt);
+    if (fingerprint.attempts.length > this.maxFingerprintAttempts) {
+      fingerprint.attempts.splice(0, fingerprint.attempts.length - this.maxFingerprintAttempts);
+    }
     
     // Safety check for fingerprinting methods
     if (attempt.fingerprinting && attempt.fingerprinting.methods && Array.isArray(attempt.fingerprinting.methods)) {
@@ -547,6 +561,9 @@ class SurveillanceAnalyzer {
     fingerprint.riskScore = fingerprint.methods.size * 10;
     this.fingerprints.set(domain, fingerprint);
     this.saveToStorage();
+
+    // Enforce limits and offload if necessary
+    this.enforceFingerprintLimits();
   }
 
   recordPriceData(details) {
@@ -751,6 +768,37 @@ class SurveillanceAnalyzer {
     } catch (error) {
       console.error('Failed to load from storage:', error);
     }
+  }
+
+  archiveFingerprintData(domain, data) {
+    try {
+      fs.mkdirSync(this.exportDirectory, { recursive: true });
+      const file = path.join(
+        this.exportDirectory,
+        `${domain}-${Date.now()}.json`
+      );
+      fs.writeFileSync(file, JSON.stringify(data, null, 2));
+    } catch (err) {
+      console.error('Failed to archive fingerprint data:', err);
+    }
+  }
+
+  enforceFingerprintLimits() {
+    if (this.fingerprints.size <= this.maxLocalOffenders) {
+      return;
+    }
+
+    const sorted = Array.from(this.fingerprints.entries()).sort(
+      (a, b) => b[1].riskScore - a[1].riskScore
+    );
+    const keep = sorted.slice(0, this.maxLocalOffenders);
+    const drop = sorted.slice(this.maxLocalOffenders);
+
+    this.fingerprints = new Map(keep);
+
+    drop.forEach(([domain, data]) => {
+      this.archiveFingerprintData(domain, data);
+    });
   }
 
   async generateSurveillanceReport() {

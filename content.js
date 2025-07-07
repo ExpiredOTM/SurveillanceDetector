@@ -581,6 +581,16 @@ class PageSurveillanceAnalyzer {
       }
       console.error('Error sending analysis to background:', error);
     });
+
+    // Reset analysis data to prevent unbounded memory usage on long-lived pages
+    this.analysisData = {
+      trackingPixels: [],
+      socialWidgets: [],
+      adNetworks: [],
+      fingerprinting: [],
+      priceElements: [],
+      behaviorTracking: []
+    };
   }
 
   cleanup() {
